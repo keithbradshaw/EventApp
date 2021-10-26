@@ -1,2 +1,2 @@
 GraphQL API for event creation and booking.
-React frontend instrumented with zRUM
+React frontend instrumented with RUM
