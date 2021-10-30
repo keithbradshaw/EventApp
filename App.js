@@ -1,12 +1,16 @@
 const dotenv = require('dotenv');
 dotenv.config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
-
 const mongoose = require('mongoose')
+
 const graphqlSchema = require('./graphql/schema/index')
 const graphqlResolvers = require('./graphql/resolvers/index')
+
+const validateAuth = require('./middleware/validateAuth')
+
 
 
 const API_PORT = process.env.API_PORT || 3000
@@ -42,7 +46,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-
+app.use(validateAuth);
 
 //here we tell the schema what the supported queries
 // resolvers used to accept forwarded requests
