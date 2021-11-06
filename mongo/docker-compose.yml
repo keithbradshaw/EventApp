@@ -6,7 +6,7 @@ services:
   #   build: .
   #   command: "node index.js"
   #   ports:
-  #     - "3000:3000"
+  #     - "8000:8000"
   #   environment:
   #    - DD_AGENT_HOST=datadog-agent
   #    - DD_TRACE_AGENT_PORT=8126

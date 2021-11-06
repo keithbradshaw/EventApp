@@ -13,14 +13,14 @@ const validateAuth = require('./middleware/validateAuth')
 
 
 
-const API_PORT = process.env.API_PORT || 3000
+const API_PORT = process.env.API_PORT || 8000
 const MONGO_DB = 'events-db';
 const MONGO_PORT = 27017;
 const DD_ENV = process.env.DD_ENV || 'dev'
 const DD_SERVICE = process.env.DD_SERVICE || 'eventapi'
 
 if (DD_ENV === 'dev') {
-    console.log("Running in dev ENV")
+    console.log(`Running in dev ENV on port ${API_PORT}`)
     const tracer = require('dd-trace').init({
         env: DD_ENV,
         service: DD_SERVICE,
@@ -28,7 +28,7 @@ if (DD_ENV === 'dev') {
     }
     )
 } else {
-    console.log(`Running in ${DD_ENV} ENV`)
+    console.log(`Running in ${DD_ENV} ENV on port ${API_PORT}`)
     //When fully containerised
     require('dd-trace').init({
         hostname: 'datadog-agent',
@@ -46,6 +46,16 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 app.use(validateAuth);
 
 //here we tell the schema what the supported queries
@@ -62,7 +72,7 @@ mongoose.connect(
 ).then(() => {
 
     logger.log('info', `Connected to DB. Now running on port ${API_PORT} in ENV ${DD_ENV}`)
-    app.listen(3000)
+    app.listen(API_PORT)
 })
     .catch(err => {
         logger.log('error', err)
